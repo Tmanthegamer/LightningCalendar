@@ -1,8 +1,4 @@
 public without sharing class CreateAppointmentController {
-	
-	private Lead theLead;
-	private List<Appointment__c> appointments;
-	private List<CalEvent> events;
 
 	private static String getAppointmentData(){
 		List<Map<String, Object>> events = new List<Map<String, Object>>();
@@ -14,7 +10,7 @@ public without sharing class CreateAppointmentController {
 		return JSON.serialize(events);
 	}
 
-	public static Map<String, Object> createCalEvent(Appointment__c a) {
+	private static Map<String, Object> createCalEvent(Appointment__c a) {
 		Map<String, Object> obj = new Map<String, Object>();
 		obj.put( 'title', a.Display_As__c );
 		obj.put( 'start', a.Start_Time__c.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss') );
@@ -39,38 +35,7 @@ public without sharing class CreateAppointmentController {
 	public static Lead getLead(String recordId) {
 		return Leadservice.queryLeadData(recordId);
 	}
-	
-	private class ApptWrapper {
-		public String start;
-		public String startTime;
-		public String endTime;
-		public String title;
-		public String subject;
-		public String displayAs;
-	}
 
-	private class CalEvent {
-		public String title {get;set;}
-		public Boolean allDay {get;set;}
-		public String startString {get;set;}
-		public String endString {get;set;}
-		public String url {get;set;}
-		public String className {get;set;}
-
-		public CalEvent(){}
-
-		public CalEvent(Appointment__c a){
-			this.title = a.Display_As__c;
-			this.startString = a.Start_Time__c.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss');
-			this.endString = a.End_Time__c.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss');
-		}
-	}
-
-
-
-	// We serialize the lead so we can actually tell if there's an error with the data
-	// instead of having a very difficult to determine error where it doesn't even enter
-	// the controller.
 	@AuraEnabled
 	public static String createAppointment(String recordId, String apptJSON) {
 
@@ -95,6 +60,16 @@ public without sharing class CreateAppointmentController {
 		Lead conLead = CreateAppointmentService.createAppointmentWithConversion(curLead, title, startTime, endTime, startDate, endDate, subject, displayAs);
 		System.debug(String.valueOf(conLead));
 		return String.isNotBlank(conLead.ConvertedOpportunityId) ? conLead.ConvertedOpportunityId : null; 
+	}
+	
+	@TestVisible
+	private class ApptWrapper {
+		public String start;
+		public String startTime;
+		public String endTime;
+		public String title;
+		public String subject;
+		public String displayAs;
 	}
 
 }

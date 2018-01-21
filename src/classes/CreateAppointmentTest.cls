@@ -65,25 +65,43 @@ private class CreateAppointmentTest
 	static void createAppointment_CreateAppointmentController() {
 		Id leadId = testLead.Id;
 		
+		CreateAppointmentController.ApptWrapper appt = new CreateAppointmentController.ApptWrapper();
+		
+		appt.title = 'Test Appointment';
+		appt.subject = DEFAULT_SUBJECT;
+		appt.displayAs = DEFAULT_DISPLAY_AS;
+		Datetime start = Datetime.newInstance(2018, 1, 20, 12, 30, 0);
+		Datetime endTimes = Datetime.newInstance(2018, 1, 20, 13, 30, 0);
+		appt.startTime = AppointmentService.convertDatetimeToJavascriptFormat(start);
+		appt.endTime = AppointmentService.convertDatetimeToJavascriptFormat(endTimes);
+
 		Test.startTest();
-		Lead convertedLead = CreateAppointmentController.createAppointment(
-			JSON.serialize(testLead), 
-			DEFAULT_TITLE, 
-			DEFAULT_START_TIME, 
-			DEFAULT_END_TIME, 
-			DEFAULT_START_DATE, 
-			DEFAULT_END_DATE, 
-			DEFAULT_SUBJECT, 
-			DEFAULT_DISPLAY_AS
+		String convertedLeadId = CreateAppointmentController.createAppointment(
+			leadId,
+			JSON.serialize(appt)
 		);
 		Test.stopTest();
+		System.assert(String.isNotBlank(convertedLeadId), 'Our lead should not be null');
 		
-		System.assert(convertedLead != null, 'Our lead should not be null');
+	}
+
+	@isTest
+	static void getInitData_ValidLead() {
+		Id leadId = testLead.Id;
+		insert TestUtils.createAppointments();
+
+		Map<String, Object> data = CreateAppointmentController.getInitData(leadId);
+		Lead testLead = (Lead) data.get('lead');
+		List<Appointment__c> appts = (List<Appointment__c>) data.get('appointments');
+		String eventDataJSON = (String) data.get('eventDataJSON');
+		List<String> subjects = (List<String>) data.get('subjects');
+		List<String> displayAs = (List<String>) data.get('displayAs');
 		
-		System.assert(
-			String.isNotBlank(convertedLead.ConvertedOpportunityId), 
-			'We need our returned lead to have an opportunity to navigate to'
-		);
+		System.assert(testLead != null && testLead.Id == leadId);
+		System.assert(String.isNotBlank(eventDataJSON));
+		System.assert(subjects != null && subjects.isEmpty() == false);
+		System.assert(displayAs != null && displayAs.isEmpty() == false);
+		System.assert(appts != null && appts.isEmpty() == false, 'Did not have any appointments');
 	}
 
 }
