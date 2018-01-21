@@ -2,19 +2,26 @@
     <aura:attribute name="lead" type="Object" />
     <aura:attribute name="record" type="Object" />
     <aura:attribute name="hours" type="Integer[]" />
-    <aura:attribute name="hour" type="Integer" />
+    <aura:attribute name="AMhours" type="Integer[]" />
+    <aura:attribute name="PMhours" type="Integer[]" />
     <aura:attribute name="mins"  type="Integer[]" />
+
+    <aura:attribute name="appt" type="Object" default="" />
+    <aura:attribute name="hour" type="Integer" />
     <aura:attribute name="min"  type="Integer" />
+    <aura:attribute name="timeOfDay" type="String" />
     <aura:attribute name="ampm" type="String[]" />
+    
     <aura:attribute name="selectedampm" type="String" />
     <aura:attribute name="subjects" type="String[]" />
     <aura:attribute name="displayAs" type="String[]" />
-    <aura:attribute name="appt" type="Object" default="" />
     <aura:attribute name="recordId" type="Id" default="00Q1I000003XfDAUA0" />
     <aura:attribute name="fieldsToQuery" type="String[]"
         default="['LastName','FirstName','PostalCode','State','Street','City','Email','Phone','Owner.Id']" />
     <aura:attribute name="error" type="Object" />
     <aura:attribute name="data" type="Object" description="initData" />
+
+    <aura:handler name="change" value="{!v.timeOfDay}" action="{!c.onTimeChange}" />
 
     <aura:method name="init" action="{!c.doInit}" /> 
     <aura:method name="prepData" action="{!c.prepData}" /> 
@@ -38,23 +45,38 @@
                 <br />
                 <div class="time">
                     <div class="hours">
-                        <lightning:select name="selectItem" label="hours" value="{!v.appt.hour}">
+                        <lightning:select name="selectItem" label="hours" value="{!v.hour}">
                             <aura:iteration items="{!v.hours}" var="val">
-                                <option value="{!val}">{!val}</option>    
+                                <aura:if isTrue="{!v.hour == val}">
+                                    <aura:set attribute="else">
+                                        <option value="{!val}">{!val}</option>
+                                    </aura:set>
+                                    <option selected="true" value="{!val}">{!val}</option>
+                                </aura:if>
                             </aura:iteration>
                         </lightning:select>
                     </div>
                     <div class="mins">
-                        <lightning:select name="selectItem" label="mins" value="{!v.appt.min}">
+                        <lightning:select name="selectItem" label="mins" value="{!v.min}">
                             <aura:iteration items="{!v.mins}" var="val">
-                                <option value="{!val}">{!val}</option>    
+                                <aura:if isTrue="{!v.min == val}">
+                                    <aura:set attribute="else">
+                                        <option value="{!val}">{!val}</option>
+                                    </aura:set>
+                                    <option selected="true" value="{!val}">{!val}</option>
+                                </aura:if>
                             </aura:iteration>
                         </lightning:select>
                     </div>
                     <div class="ampm">
-                        <lightning:select name="selectItem" label="am / pm" value="{!v.appt.ampm}">
+                        <lightning:select name="selectItem" label="am / pm" value="{!v.timeOfDay}">
                             <aura:iteration items="{!v.ampm}" var="val">
-                                <option value="{!val}">{!val}</option>    
+                                <aura:if isTrue="{!v.timeOfDay == val}">
+                                    <aura:set attribute="else">
+                                        <option value="{!val}">{!val}</option>
+                                    </aura:set>
+                                    <option selected="true" value="{!val}">{!val}</option>
+                                </aura:if>
                             </aura:iteration>
                         </lightning:select>
                     </div>

@@ -53,7 +53,12 @@
 			console.log(event.data);
 			
 			var data = JSON.parse(event.data);
-			if(data.length !== undefined){
+			
+			if(data.unselect === true) {
+				$('#calendar').fullCalendar('unselect');
+				return;
+			}
+			else if(data.length !== undefined){
 				buildCalendar(data);
 			}
 			else if( data.title && data.start && data.end ) {

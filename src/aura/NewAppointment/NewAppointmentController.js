@@ -22,4 +22,9 @@
 		let appt = component.get("v.appt");
 		helper.prepareForSave(component, appt);
 	},
+
+	onTimeChange : function(component, event, helper) {
+		let ampm = component.get("v.timeOfDay");
+		helper.adjustAvailableTimes(component, ampm);
+	}
 })

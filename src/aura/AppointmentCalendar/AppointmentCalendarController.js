@@ -12,6 +12,8 @@
 	},
 	onCancel : function(component, event, helper) {
 		component.set("v.showModal", false);
+		var msg = { unselect : true };
+		helper.postIframeMessage(component, msg);
 	},
 	onSave : function(component, event, helper) {
 		var newAppt = component.find("appt");

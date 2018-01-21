@@ -22,7 +22,14 @@ public without sharing class CreateAppointmentController {
 	public static Map<String, Object> getInitData(String recordId) {
 		Map<String, Object> data = new Map<String, Object>();
 
-		data.put('lead', getLead(recordId));
+		Lead l = getLead(recordId);
+		String error = null;
+		if( l == null ) {
+			l = Leadservice.queryLeadConvertedData(recordId);
+			if(l != null) error = 'Lead was already converted, cannot make appointment';
+		}
+		data.put('lead', l);
+		data.put('error', error);
 		data.put('appointments', AppointmentService.queryAllApointments());
 		data.put('eventDataJSON', getAppointmentData());
 		data.put('subjects', CreateAppointmentService.getPicklistValues('Appointment__c', 'Subject__c'));

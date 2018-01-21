@@ -34,7 +34,7 @@
     handleNewAppointment : function(component, eventDataJSON) {
         var eventData = JSON.parse(eventDataJSON);
         if(eventData && eventData.start && eventData.end){
-            if(this.isOnWeekend(component, eventData) === false){
+            if(this.isOnWeekend(component, eventData) === false && this.isDuringDaytime(component, eventData) == false){
                 this.showNewAppointmentModal(component, eventData);
             }
         }
@@ -58,6 +58,17 @@
             isValid = confirm("Are you sure you want to double book this time?");
         }
         return isValid;
+    },
+
+    isDuringDaytime : function(component, eventData) {
+        let start = this.convertToProperDate(component, eventData.start);
+        let end = this.convertToProperDate(component, eventData.end);
+
+        if(end.getHours() > 20 || start.getHours() <= 6) {
+            alert('You are not allowed to book outside of day time hours, relax instead');
+            return true; 
+        }
+        return false;
     },
 
     isOnWeekend : function(component, eventData) {
@@ -143,8 +154,12 @@
         let eventDataJSON = result.eventDataJSON;
         let subjects = result.subjects;
         let displayAs = result.displayAs;
+        let error = result.error;
+
+        if(error) component.set("v.showModal", true);
 
         component.set("v.lead", lead);
+        component.set("v.error", error);
         component.set("v.appointments", appointments);
         
         // Give newAppt the proper picklist values
@@ -184,6 +199,7 @@
                 } else {
                     console.log("Unknown error");
                 }
+                alert("Could not make the Appointment, was this lead already converted?");
             }
         });
         $A.enqueueAction(action);

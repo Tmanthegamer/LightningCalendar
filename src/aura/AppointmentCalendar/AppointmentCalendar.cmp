@@ -8,13 +8,14 @@
     <aura:attribute access="private" name="vfHost" type="String" default="https://delicious-dev-ed--c.na73.visual.force.com" />
     <aura:attribute access="global" name="showModal" type="Boolean" default="false" />
     <aura:attribute access="global" name="data" type="Object" />
+    <aura:attribute access="global" name="error" type="Object" />
 
     <!-- Event Handlers -->
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
 
     <!-- The Visualforce page that handles the appointment calendar -->
-    <iframe aura:id="vfFrame" width="100%" height="2000px" src="{!v.vfHost + '/apex/AppointmentPage?id=' + v.recordId}"/>
-    
+    <iframe aura:id="vfFrame" width="100%" height="1400px" frameBorder="0" src="{!v.vfHost + '/apex/AppointmentPage?id=' + v.recordId}"/>
+
     <div class="{!v.showModal ? 'slds-show' : 'slds-hide'}" style="height: 640px;">
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
@@ -22,11 +23,23 @@
                     <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Appointment</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <c:NewAppointment aura:id="appt" recordId="{!v.recordId}" data="{!v.data}" />
+                    <aura:if isTrue="{!v.error}">
+                        <p class="slds-text-color_error slds-text-heading_small">
+                            {!v.error}
+                        </p>
+                    </aura:if>
+                    <div class="{!empty(v.error) ? '' : 'slds-hide'}">
+                        <c:NewAppointment aura:id="appt" recordId="{!v.recordId}" data="{!v.data}" />
+                    </div>
                 </div>
                 <footer class="slds-modal__footer">
-                    <button class="slds-button slds-button_neutral" onclick="{!c.onCancel}">Cancel</button>
-                    <button class="slds-button slds-button_brand" onclick="{!c.onSave}">Save</button>
+                    <aura:if isTrue="{!empty(v.error)}">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.onCancel}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.onSave}">Save</button>
+                        <aura:set attribute="else">
+                           <button class="slds-button slds-button_neutral" onclick="{!c.onCancel}">Close</button>
+                        </aura:set>
+                    </aura:if>
                 </footer>
             </div>
         </section>
