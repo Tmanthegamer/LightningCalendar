@@ -1,0 +1,106 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">    
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<apex:slds />
+<head>
+	<title>Appointment</title>
+</head>
+	<meta charset='utf-8' />
+	<link href="{! URLFOR($Resource.FullCalendar, 'fullcalendar-3.7.0/fullcalendar.min.css')}" rel='stylesheet' />
+	<link href="{! URLFOR($Resource.FullCalendar, 'fullcalendar-3.7.0/fullcalendar.print.min.css')}" rel='stylesheet' media='print' />
+	<script src="{! URLFOR($Resource.FullCalendar, 'fullcalendar-3.7.0/lib/moment.min.js')}"></script>
+	<script src="{! URLFOR($Resource.FullCalendar, 'fullcalendar-3.7.0/lib/jquery.min.js')}"></script>
+	<script src="{! URLFOR($Resource.FullCalendar, 'fullcalendar-3.7.0/fullcalendar.min.js')}"></script>
+<body> 
+	 <div class="slds-scope">
+
+		<h1 class="slds-text-heading--label slds-m-bottom--small">
+			Appointment
+		</h1>  
+
+
+	</div>
+
+	<!-- Full Calendar START -->
+	<div class="slds-size--1-of-1">
+		<div id="calendar" />
+	</div>
+	<!-- Full Calendar END -->
+
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		/*max-width: 900px;*/
+		margin: 0 auto;
+	}
+
+</style>
+	<script>
+		const ORIGIN = "https://delicious-dev-ed.lightning.force.com";
+		window.addEventListener("message", function(event) {
+				handleLightningMessage(event);
+		}, false);
+
+		function handleLightningMessage(event) {
+			console.log(event.data);
+			
+			var data = JSON.parse(event.data);
+			if(data.length !== undefined){
+				buildCalendar(data);
+			}
+			else if( data.title && data.start && data.end ) {
+				addEvent(data);
+			}
+
+		}
+
+		function sendLightningMessage(data) {
+			parent.postMessage(data, ORIGIN);
+		}
+
+		function addEvent(evt) {
+			$('#calendar').fullCalendar('renderEvent', evt, true);
+		}
+
+		function buildCalendar(evts) {
+
+			$('#calendar').fullCalendar({
+				minTime: "06:00:00",
+				maxTime: "21:00:00",
+				defaultView: 'agendaWeek',
+				navLinks: false, // can click day/week names to navigate views
+				selectable: true,
+				selectHelper: true,
+				select: function(start, end) {
+					// Just pass the data to the Lightning Component
+					var eventData = {};
+					var startDate = new Date(start);
+					var endDate = new Date(end);
+					eventData.start = startDate;
+					eventData.end = endDate;
+					sendLightningMessage(JSON.stringify(eventData));
+				},
+				editable: false,
+				allDaySlot: false,
+				slotMinutes: 60,
+				eventLimit: true, // allow "more" link when too many events
+				events: evts
+			});
+	}
+
+	$(document).ready(function() {
+		sendLightningMessage("hello");
+	});
+	</script>
+
+</body>
+</html>
+</apex:page>

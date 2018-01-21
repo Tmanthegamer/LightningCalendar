@@ -1,0 +1,7 @@
+<aura:component >
+	<aura:attribute name="recordId" type="String" />
+
+	<c:CustomerInfo recordId="{!v.recordId}"/>
+	<c:AppointmentCalendar recordId="{!v.recordId}" />
+	<!-- <c:NewAppointment /> -->
+</aura:component>

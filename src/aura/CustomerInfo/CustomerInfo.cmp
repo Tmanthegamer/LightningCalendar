@@ -1,0 +1,84 @@
+<aura:component >
+    <aura:attribute name="lead" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="fieldsToQuery" type="String[]"
+        default="['LastName','FirstName','PostalCode','State','Street','City','Email','Phone','Owner.Id']" />
+    <aura:attribute name="error" type="Object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+
+    <force:recordData aura:id="forceRecordCmp"
+        recordId="{!v.recordId}"
+        layoutType="FULL"
+        mode="VIEW"
+        fields="{!v.fieldsToQuery}"
+        targetRecord="{!v.record}"
+        targetFields="{!v.lead}"
+        targetError="{!v.error}" />
+
+    <div class="slds-p-around_small">
+        <lightning:card iconName="standard:lead" >
+        
+            <aura:set attribute="title">
+                Customer Information
+            </aura:set>
+
+            <lightning:layout horizontalAlign="spread">
+            
+                <lightning:layoutItem size="6" class="slds-p-around_small">
+
+                    <aura:if isTrue="{!v.recordId}">
+                        <lightning:recordViewForm recordId="{!v.lead.Id}" objectApiName="Lead">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:outputField fieldName="FirstName" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:outputField fieldName="LastName"/>
+                                </div>
+                            </div>
+                            <lightning:outputField fieldName="Street"/>
+                            <lightning:outputField fieldName="City"/>
+                            <lightning:outputField fieldName="State"/>
+                            <lightning:outputField fieldName="PostalCode"/>
+                        </lightning:recordViewForm>
+                    </aura:if>
+                
+                </lightning:layoutItem>
+            </lightning:layout>
+
+        </lightning:card>
+        <lightning:card iconName="standard:user">
+            
+            <aura:set attribute="title">
+                Lead Owner
+            </aura:set>
+
+            <lightning:layout horizontalAlign="spread">
+            
+                <lightning:layoutItem size="12" class="slds-p-around_small">
+                    <aura:if isTrue="{!v.lead.Owner.Id}">
+                        <lightning:recordViewForm recordId="{!v.lead.Owner.Id}" objectApiName="User">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:outputField fieldName="FirstName" />
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:outputField fieldName="LastName"/>
+                                </div>
+                            </div>
+                            <lightning:outputField fieldName="Email"/>
+                            <lightning:outputField fieldName="Phone"/>
+                        </lightning:recordViewForm>
+                    </aura:if>
+                </lightning:layoutItem>
+            </lightning:layout>
+
+        </lightning:card>
+    </div>
+
+    
+
+    
+</aura:component>

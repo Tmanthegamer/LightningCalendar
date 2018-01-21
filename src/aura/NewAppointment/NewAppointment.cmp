@@ -1,0 +1,83 @@
+<aura:component >
+    <aura:attribute name="lead" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="hours" type="Integer[]" />
+    <aura:attribute name="hour" type="Integer" />
+    <aura:attribute name="mins"  type="Integer[]" />
+    <aura:attribute name="min"  type="Integer" />
+    <aura:attribute name="ampm" type="String[]" />
+    <aura:attribute name="selectedampm" type="String" />
+    <aura:attribute name="subjects" type="String[]" />
+    <aura:attribute name="displayAs" type="String[]" />
+    <aura:attribute name="appt" type="Object" default="" />
+    <aura:attribute name="recordId" type="Id" default="00Q1I000003XfDAUA0" />
+    <aura:attribute name="fieldsToQuery" type="String[]"
+        default="['LastName','FirstName','PostalCode','State','Street','City','Email','Phone','Owner.Id']" />
+    <aura:attribute name="error" type="Object" />
+    <aura:attribute name="data" type="Object" description="initData" />
+
+    <aura:method name="init" action="{!c.doInit}" /> 
+    <aura:method name="prepData" action="{!c.prepData}" /> 
+
+    <force:recordData aura:id="forceRecordCmp"
+        recordId="{!v.recordId}"
+        layoutType="FULL"
+        mode="VIEW"
+        fields="{!v.fieldsToQuery}"
+        targetRecord="{!v.record}"
+        targetFields="{!v.lead}"
+        targetError="{!v.error}" />
+
+    <aura:if isTrue="{!v.lead.Id}">
+        <lightning:recordViewForm recordId="{!v.lead.Id}" objectApiName="Lead">
+            <div class="slds-box slds-theme_default">
+                <ui:inputText label="Appointment Name" value="{!v.appt.title}" /> 
+                Initial Appointment Date: <ui:outputText value="{!v.appt.start}" />
+                <br />
+                Initial Appointment Time:
+                <br />
+                <div class="time">
+                    <div class="hours">
+                        <lightning:select name="selectItem" label="hours" value="{!v.appt.hour}">
+                            <aura:iteration items="{!v.hours}" var="val">
+                                <option value="{!val}">{!val}</option>    
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <div class="mins">
+                        <lightning:select name="selectItem" label="mins" value="{!v.appt.min}">
+                            <aura:iteration items="{!v.mins}" var="val">
+                                <option value="{!val}">{!val}</option>    
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <div class="ampm">
+                        <lightning:select name="selectItem" label="am / pm" value="{!v.appt.ampm}">
+                            <aura:iteration items="{!v.ampm}" var="val">
+                                <option value="{!val}">{!val}</option>    
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+                <lightning:outputField fieldName="Email" />
+                <lightning:outputField fieldName="Phone"/>
+                <lightning:select name="selectItem" label="Subject" value="{!v.appt.subject}">
+                     <aura:iteration items="{!v.subjects}" var="val">
+                        <option value="{!val}">{!val}</option>    
+                     </aura:iteration>
+                </lightning:select>
+                <lightning:select name="selectItem" label="Show Time As" value="{!v.appt.displayAs}">
+                     <aura:iteration items="{!v.displayAs}" var="val">
+                        <option value="{!val}">{!val}</option>    
+                     </aura:iteration>
+                </lightning:select>
+                Location:<lightning:formattedText linkify="true" 
+                    value="{!join('\n',
+                        v.lead.Street,
+                        v.lead.City,
+                        v.lead.PostalCode,
+                        v.lead.State) }" />
+            </div>
+        </lightning:recordViewForm>
+    </aura:if>
+</aura:component>
